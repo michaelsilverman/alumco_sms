@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains alumco_sms.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function alumco_sms_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the alumco_sms module.
+    case 'help.page.alumco_sms':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function alumco_sms_theme() {
+  return [
+    'alumco_sms' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+
+function alumco_sms_install() {
+  //  image_url_location: 'http://www.aluminumcompany.com/sites/all/themes/aluminum_company/images/meet_'
+//api_uri: 'http://52.41.235.57:8882/api/ServiceCalls?date=2018-05-18'
+
+     \Drupal::configFactory()->getEditable('alumco_sms.settings')
+         ->set('image_default_address', 'http://www.aluminumcompany.com/sites/all/themes/aluminum_company/images/meet_')
+         ->save();
+
+    \Drupal::configFactory()->getEditable('alumco_sms.settings')
+        ->set('api_uri', 'http://52.41.235.57:8882/api/ServiceCalls?date=2018-05-18')
+        ->save();
+}

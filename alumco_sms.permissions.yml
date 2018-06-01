@@ -1,0 +1,4 @@
+alumco_sms manage_settings:
+  title: 'Administer SMS settings'
+  description: 'Allow user to manage SMS settings'
+  restrict access: false

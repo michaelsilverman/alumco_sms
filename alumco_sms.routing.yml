@@ -1,0 +1,17 @@
+alumco_sms.getjson:
+  path: '/getjson/{date}'
+  defaults:
+    _controller: 'Drupal\alumco_sms\Controller\smsAlumcoController::getServiceCalls'
+    date: '20180518'
+  requirements:
+    _access: 'TRUE'
+
+alumco_sms.admin_settings:
+  path: '/admin/config/alumco_sms'
+  defaults:
+    _form: '\Drupal\alumco_sms\Form\AdminSettingsForm'
+    _title: 'Manage Aluminum Company configuration Settings'
+  requirements:
+    _permission: 'administrator alumco_sms'
+
+

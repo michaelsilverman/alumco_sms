@@ -1,0 +1,6 @@
+services:
+  alumco_sms.receive_text:
+    class: Drupal\alumco_sms\EventSubscriber\TwilioEventSubscriber
+    arguments: ['@logger.factory']
+    tags:
+      - { name: event_subscriber }
