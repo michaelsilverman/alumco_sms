@@ -242,6 +242,23 @@ class smsAlumcoController extends ControllerBase {
 
   }
 
+  public function sendTest() {
+      /** @var \Drupal\sms\Provider\SmsProviderInterface $sms_service */
+      $sms_service = \Drupal::service('sms.provider');
+      $sms = (new \Drupal\sms\Message\SmsMessage())
+          ->setMessage('Foobar') // Set the message.
+          ->addRecipient('6308999711') // Set recipient phone number
+          ->setDirection(\Drupal\sms\Direction::OUTGOING);
 
+try {
+          $sms_service->queue($sms);
+      }
+catch (\Drupal\sms\Exception\RecipientRouteException $e) {
+          // Thrown if no gateway could be determined for the message.
+      }
+catch (\Exception $e) {
+          // Other exceptions can be thrown.
+      }
+  }
 
 }

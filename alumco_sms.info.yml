@@ -1,7 +1,6 @@
-name: 'alumco_sms'
+name: 'Alumco SMS'
 type: module
-description: 'My Awesome Module'
+description: 'Client SMS functionality for Aluminum Company'
 core: 8.x
 package: 'SRG'
 dependencies:
-  - srg_twilio

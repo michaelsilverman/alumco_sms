@@ -4,12 +4,14 @@ namespace Drupal\alumco_sms\EventSubscriber;
 
 use Drupal\twilio\Event\ReceiveVoiceEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-//use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\srg_twilio\Event\TwilioEvents;
+//use Drupal\srg_twilio\Event\TwilioEvents;
+use Drupal\sms\event\SmsEvents;
+use Drupal\sms\event\SmsMessageEvent;
 use Drupal\srg_twilio\Event\ReceiveTextEvent;
 //use Drupal\srg_twilio\Event\ReceiveVoiceEvent;
-use Drupal\srg_twilio\Event\SendTextEvent;
+//use Drupal\srg_twilio\Event\SendTextEvent;
 //use Drupal\srg_twilio\Event\SendVoiceEvent;
 
 /**
@@ -35,40 +37,199 @@ class TwilioEventSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
 
+        public static function getSubscribedEvents() {
+            $events[SmsEvents::MESSAGE_GATEWAY ][] = ['onMessageGatway'];
+            $events[SmsEvents::MESSAGE_PRE_PROCESS][] = ['onMessagePreProcess'];
+            $events[SmsEvents::MESSAGE_POST_PROCESS][] = ['onMessagePostProcess'];
+            $events[SmsEvents::MESSAGE_INCOMING_POST_PROCESS][] = ['onMessageIncomingPostProcess'];
+            $events[SmsEvents::MESSAGE_INCOMING_PRE_PROCESS][] = ['onMessageIncomingPreProcess'];
+            $events[SmsEvents::MESSAGE_OUTGOING_POST_PROCESS][] = ['onMessageOutgoingPreProcess'];
+            $events[SmsEvents::MESSAGE_OUTGOING_PRE_PROCESS][] = ['onMessageOutgoingPostProcess'];
+            $events[SmsEvents::MESSAGE_QUEUE_POST_PROCESS][] = ['onMessageQueuePostProcess'];
+            $events[SmsEvents::MESSAGE_QUEUE_PRE_PROCESS][] = ['onMessageQueuePreProcess'];
 
+      //      $events[SmsEvents::MESSAGE_INCOMING_POST_PROCESS][] = ['onReceiveText'];
+            return $events;
+        }
 
-    static function getSubscribedEvents() {
-        $events[TwilioEvents::SEND_TEXT_EVENT][] = array('onSendText');
-        $events[TwilioEvents::RECEIVE_TEXT_EVENT][] = array('onReceiveText');
-   //     $events[TwilioEvents::SEND_VOICE_EVENT][] = array('onSendVoice');
-   //     $events[TwilioEvents::RECEIVE_VOICE_EVENT][] = array('onReceiveVoice');
-        return $events;
-    }
 
     /**
      * This method is called whenever the twilio.receive_voice_event event is
      * dispatched.
      *
-     * @param SendTextEvent $event
+     * @param SmsMessageEvent $event
      */
-    public function onSendText(SendTextEvent $event) {
-        $this->loggerFactory->get('alumco_sms')->notice('Send Text');
+    public function onMessageGateway(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Gateway');
         // need to create entity to track the state of each message sent
         //each client will have their own event table
         // when message is sent create a state messgae for the "send" phone number
         // This will identify the message that was send
     }
 
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessagePreProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Pre Processxxxx');
+        foreach($event->getMessages() as $message) {
+            $gateway_id = $message->getGateway()->get('id');
+            if ($gateway_id == 'gw_alumco') {
+                $this->loggerFactory->get('alumco_sms3')->notice($gateway_id);
+            }
+            $text = $message->getMessage();
+            $from_number = $message->getSenderNumber();
+     //       $this->loggerFactory->get('alumco_sms1')->notice($from_number);
+     //       $this->loggerFactory->get('alumco_sms2')->notice($text);
+            $gateway = $message->getGateway();
+      //      $this->loggerFactory->get('alumco_sms3')->notice($gateway_id);
+            $plugin = $gateway->getPlugin();
+            $plugin_id = $plugin->getPluginId();
+     //       $this->loggerFactory->get('alumco_sms4')->notice($plugin_id);
+            $plugin_conf = $plugin->getConfiguration();
+            foreach ($plugin_conf as $key => $value) {
+    //            $this->loggerFactory->get('alumco_sms5')->notice($key.'=>'.$value);
+            }
+
+
+        }
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessagePostProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Post Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageIncomingPreProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message incoming Pre Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageIncomingPostProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Incoming Post Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageOutgoingPre(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Outgoing Pre');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageOutgoingPost(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Outgoing Post');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function xxonMessagePreProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Pre Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function xxonMessagePostProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Pre Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageQueuePreProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Queue Pre Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
+
+    /**
+     * This method is called whenever the twilio.receive_voice_event event is
+     * dispatched.
+     *
+     * @param SmsMessageEvent $event
+     */
+    public function onMessageQueuePostProcess(SmsMessageEvent $event) {
+        $this->loggerFactory->get('alumco_sms')->notice('Message Queue Post Process');
+        // need to create entity to track the state of each message sent
+        //each client will have their own event table
+        // when message is sent create a state messgae for the "send" phone number
+        // This will identify the message that was send
+    }
   /**
    * This method is called whenever the twilio.receive_text_event event is
    * dispatched.
    *
-   * @param ReceiveTextEvent $event
+   * @param Event $event
    */
-  public function onReceiveText(ReceiveTextEvent $event) {
+  public function onReceiveText(Event $event) {
       // test if the phone number is this clients
 
-
+      $this->loggerFactory->get('alumco_sms0')->notice('fred');
       $client_name = 'Aluminum Company';
       $query = \Drupal::entityQuery('node')
           ->condition('status', 1)
